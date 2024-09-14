@@ -6,8 +6,6 @@ import itk
 from itkwidgets import compare, checkerboard
 import numpy as np
 import SimpleITK as sitk
-
-# Callbacks for plotting registration progress.
 import registration_callbacks
 
 
