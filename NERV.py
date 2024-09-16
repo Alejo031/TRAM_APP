@@ -13,9 +13,50 @@ import numpy as np
 from comparar_percentiles_lut import comparar_percentiles
 import time
 from respuesta_binaria import solicitar_respuesta_binaria
-
 from mri_registration_tool import heavy_registration, fast_registration
+import os
+import subprocess
+import sys
+import pkg_resources
 
+def instalar_faltantes_desde_requerimientos():
+    """
+    Lee el archivo requirements.txt, verifica si las dependencias están instaladas
+    y si no lo están, las instala automáticamente.
+    """
+    requirements_file = 'requirements.txt'
+    
+    try:
+        # Leer el archivo requirements.txt
+        with open(requirements_file, 'r') as f:
+            requerimientos = f.read().splitlines()
+        
+        # Verificar e instalar los paquetes que faltan
+        for requerimiento in requerimientos:
+            paquete = requerimiento.split('==')[0]  # Obtiene el nombre del paquete
+            try:
+                # Verifica si el paquete está instalado
+                pkg_resources.require(requerimiento)
+            except pkg_resources.DistributionNotFound:
+                # El paquete no está instalado, entonces lo instala
+                print(f"El paquete {paquete} no está instalado. Instalando...")
+                subprocess.check_call([sys.executable, "-m", "pip", "install", requerimiento])
+            except pkg_resources.VersionConflict:
+                # Si hay un conflicto de versiones, también lo instala
+                print(f"Conflicto de versión encontrado para {paquete}. Actualizando...")
+                subprocess.check_call([sys.executable, "-m", "pip", "install", requerimiento])
+    
+    except FileNotFoundError:
+        print(f"No se encontró el archivo {requirements_file}. Asegúrate de que exista en el directorio.")
+    except Exception as e:
+        print(f"Error al procesar los requerimientos: {e}")
+
+
+# Generar el archivo requirements.txt al finalizar la ejecución
+def generar_requirements():
+    with open('requirements.txt', 'w') as f:
+        # Llama a pip freeze y guarda la salida en el archivo requirements.txt
+        subprocess.run(['pip', 'freeze'], stdout=f)
 
 
 def invert_image_list(image_list):
@@ -37,6 +78,8 @@ def invert_image_list(image_list):
     return inverted_images 
 
 
+
+
 # Habilito el uso de ventanas
 root = tk.Tk()
 root.withdraw()  # Ocultar la ventana principal
@@ -47,6 +90,15 @@ print("")
 print("")
 
 time.sleep(3)
+
+#Verificación de paquetes instalados:
+print("Aguarde mientras se verifica que los paquetes necesarios esten instalados")
+print("Esta función solo es necesaria al trabajar con el script. Si ve este mensaje en el ejecutable comente la siguiente sección del código y vuelva a crearlo")
+# Descarga los paquetes de python necesarios para correr el programa. Utilizar cuando se hace un pull desde el repositorio a 
+# partir de un .txt que se encuentra en la carpeta del main
+instalar_faltantes_desde_requerimientos()
+# Crea el archivo "requerimientos.txt" con la lista de paquetes necesarios para ejecutar el programa
+generar_requirements()
 
 print("Esta herramienta permite aplicar registraciones externas o utilizar una herramienta de registración propia")
 time.sleep(2)
