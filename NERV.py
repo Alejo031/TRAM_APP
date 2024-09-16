@@ -104,7 +104,9 @@ else:
 
     #Cargo resonancias temprana y tardía en 3D
     t1_img, t1_metadata = get_dicom(t1_path)
+    print(f"Se cargó la imagen temprana desde la carpeta: {t1_path}")
     t2_img, t2_metadata = get_dicom(t2_path)
+    print(f"Se cargó la imagen temprana desde la carpeta: {t2_path}")
 
     #Elijo el tipo de registro que quiero usar
     print("El programa dispone de dos estrategias para aplicar la registracion: una lenta de alta precisión y una rápida de menor precisión")
