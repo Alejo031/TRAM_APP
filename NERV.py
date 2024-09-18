@@ -1,6 +1,10 @@
+__author__ = 'Alejo Chacon'
+
 from load_registration import load_registration_dicom
 from compare_registered_mri import compare_mri
-from apply_lut import apply_lut, apply_histogram
+from apply_lut import apply_lut_2, apply_histogram, lut_and_clipping_manager
+from plot_histogram import plot_histograms_with_lut
+
 import tkinter as tk
 from tkinter import filedialog
 from back_to_slices import convert_3d_image_to_slices
@@ -14,68 +18,11 @@ from comparar_percentiles_lut import comparar_percentiles
 import time
 from respuesta_binaria import solicitar_respuesta_binaria
 from mri_registration_tool import heavy_registration, fast_registration
-import os
-import subprocess
-import sys
-import pkg_resources
-
-def instalar_faltantes_desde_requerimientos():
-    """
-    Lee el archivo requirements.txt, verifica si las dependencias están instaladas
-    y si no lo están, las instala automáticamente.
-    """
-    requirements_file = 'requirements.txt'
-    
-    try:
-        # Leer el archivo requirements.txt
-        with open(requirements_file, 'r') as f:
-            requerimientos = f.read().splitlines()
-        
-        # Verificar e instalar los paquetes que faltan
-        for requerimiento in requerimientos:
-            paquete = requerimiento.split('==')[0]  # Obtiene el nombre del paquete
-            try:
-                # Verifica si el paquete está instalado
-                pkg_resources.require(requerimiento)
-            except pkg_resources.DistributionNotFound:
-                # El paquete no está instalado, entonces lo instala
-                print(f"El paquete {paquete} no está instalado. Instalando...")
-                subprocess.check_call([sys.executable, "-m", "pip", "install", requerimiento])
-            except pkg_resources.VersionConflict:
-                # Si hay un conflicto de versiones, también lo instala
-                print(f"Conflicto de versión encontrado para {paquete}. Actualizando...")
-                subprocess.check_call([sys.executable, "-m", "pip", "install", requerimiento])
-    
-    except FileNotFoundError:
-        print(f"No se encontró el archivo {requirements_file}. Asegúrate de que exista en el directorio.")
-    except Exception as e:
-        print(f"Error al procesar los requerimientos: {e}")
+from lut_inverter import invert_image_list
+from update_manager import generar_requirements, instalar_faltantes_desde_requerimientos
 
 
-# Generar el archivo requirements.txt al finalizar la ejecución
-def generar_requirements():
-    with open('requirements.txt', 'w') as f:
-        # Llama a pip freeze y guarda la salida en el archivo requirements.txt
-        subprocess.run(['pip', 'freeze'], stdout=f)
 
-
-def invert_image_list(image_list):
-    inverted_images = []
-
-    for img in image_list:
-        # Convertir la imagen a un array NumPy
-        img_array = sitk.GetArrayFromImage(img)
-        
-        # Multiplicar los valores de los píxeles por -1
-        inverted_array = -img_array
-        
-        # Convertir el array invertido de vuelta a una imagen SimpleITK
-        inverted_img = sitk.GetImageFromArray(inverted_array)
-        inverted_img.CopyInformation(img)
-        
-        inverted_images.append(inverted_img)
-
-    return inverted_images 
 
 
 
@@ -92,13 +39,13 @@ print("")
 time.sleep(3)
 
 #Verificación de paquetes instalados:
-print("Aguarde mientras se verifica que los paquetes necesarios esten instalados")
-print("Esta función solo es necesaria al trabajar con el script. Si ve este mensaje en el ejecutable comente la siguiente sección del código y vuelva a crearlo")
+#print("Aguarde mientras se verifica que los paquetes necesarios esten instalados")
+#print("Esta función solo es necesaria al trabajar con el script. Si ve este mensaje en el ejecutable comente la siguiente sección del código y vuelva a crearlo")
 # Descarga los paquetes de python necesarios para correr el programa. Utilizar cuando se hace un pull desde el repositorio a 
 # partir de un .txt que se encuentra en la carpeta del main
-instalar_faltantes_desde_requerimientos()
+#instalar_faltantes_desde_requerimientos()
 # Crea el archivo "requerimientos.txt" con la lista de paquetes necesarios para ejecutar el programa
-generar_requirements()
+#generar_requirements()
 
 print("Esta herramienta permite aplicar registraciones externas o utilizar una herramienta de registración propia")
 time.sleep(2)
@@ -164,7 +111,7 @@ else:
     print("El programa dispone de dos estrategias para aplicar la registracion: una lenta de alta precisión y una rápida de menor precisión")
     aux = False
     while (aux == False):
-        respuesta3 = input(f"¿Qué estrategia desea aplicar? (RAPIDA/PRECISA)").strip().lower()
+        respuesta3 = input(f"¿Qué estrategia desea aplicar?(RAPIDA/PRECISA): ").strip().lower()
         if respuesta3 in ["rápida", "rapida"]:
             resampled3D = fast_registration(t1_img, t2_img)
             aux = True
@@ -192,25 +139,31 @@ compare_mri(t1_list, t2_list, "t1 MRI", "t2 MRI", "Verifique que la registració
 
 print("Aguarde mientras se procesan las resonancias")
 
+
 #Se restan las resonancias
 subtraction = subtract_mri(t1_list, t2_list)
-#Se aplica el mapa de colores para TRAM
-tram = apply_lut(subtraction, 5, "jet_r")
-show_sitk_image(tram, lut='jet_r', window_title='TRAM RGB')
+# Se aplica la LUT
+print("A continuación se muestran el TRAM crudo y el histograma de la resta en escala de grises")
+print("Utilice la información del histograma para decidir si quiere recortarlo y mejorar la interpretacion de la imagen")
+tram = lut_and_clipping_manager(subtraction, lut='jet_r')
+
+#Comprobar histograma
+plot_histograms_with_lut(subtraction, tram)
 
 #Ajuste manual de los percentiles de la LUT
 resp1 = solicitar_respuesta_binaria("¿Desea ajustar el recorte de valores en la LUT a color?")
-p1=5
+p1=0
 if(resp1 == True):
     print("")
-    print("Disminuya el % recortado para aumentar la especificidad y disminuir la sensibilidad, aumentelo para lograr el efecto contrario")
+    print("Ingrese el parámetro de recorte deseado. Puede utilizar el valor de intensidad máxima permitida o el percentil de cola que desea eliminar")
+    print("Recuerde incluir el caracter '%' si desea realizar un recorte del percentil de cola del histograma")
     time.sleep(3)
     aux1 = tram
     control = False
     while(control!=True):
-        p2 = float(input(f"Ingrese el percentil de cola que desea excluir (Por defecto 5%)  ").strip().lower())
-        aux2 = apply_lut(subtraction, p2, "jet_r")
-        print("Se grafican el tram con el percentil anterior y el actual")
+        p2 = input(f"Ingrese el recorte que desea aplicar(intensidad o percentil): ").strip().lower()        
+        aux2 = lut_and_clipping_manager(subtraction,p2, lut='jet_r')
+        print("Se grafican el tram con el recorte anterior y el actual")
         comparar_percentiles(aux1, aux2, p1, p2, "Comparar recorte de percentiles RGB")
         resp2 = solicitar_respuesta_binaria("¿Desea probar otro valor?")
         if(resp2 == True):
@@ -238,9 +191,13 @@ for s_img in subtraction:
 # Obtención del TRAM en escala de grises. No es necesario graficar ya que es un paso intermedio para llegar a la version PET-CT del TRAM.
 # Queda comentada la sección en la que si visualiza y ajusta el histograma por si en algun momento le sirve a alguien
 
+
+
 # Ajuste del rango dinamico de la imagen en blanco y negro
-p3=0
-tram_bw = apply_histogram(subtraction_sitk, p3)
+#p3=0
+#tram_bw = apply_histogram(subtraction_sitk, p3)
+
+
 #show_sitk_image(tram_bw, lut='gray', window_title='TRAM Grayscale')
 #resp1 = solicitar_respuesta_binaria("¿Desea ajustar el recorte de valores en la LUT en escala de grises?")
 #if(resp1==True):
@@ -273,7 +230,7 @@ tram_bw = apply_histogram(subtraction_sitk, p3)
 print("Se muestran el TRAM a color y la version PET-CT en escala de grises exportable a ARIA")
 print("El TRAM PET-CT no se recorta ya que la LUT puede ser ajustada dentro de ARIA")
 time.sleep(5)
-tram_pet = invert_image_list(tram_bw)
+tram_pet = invert_image_list(subtraction_sitk)
 compare_mri(tram, tram_pet, "RGB", "PET inverted", "TRAM RGB y TRAM adaptado para PET-CT")
 #Se pregunta si el usuario quiere guardar los TRAMs obtenidos
 respuesta2 = solicitar_respuesta_binaria("¿Desea guardar el resultado RGB?")

@@ -19,7 +19,8 @@ def comparar_percentiles(img1, img2, title1, title2, window_title):
     fig, axs = plt.subplots(1, 2, figsize=(12, 6))
     fig.subplots_adjust(bottom=0.2)
     fig.canvas.manager.set_window_title(window_title)
-    
+
+
     # Define una subfuncion que grafica ambas matrices de pixeles en paralelo
     def show_images(index):
         nonlocal current_index
@@ -29,11 +30,15 @@ def comparar_percentiles(img1, img2, title1, title2, window_title):
             ax.clear()
         
         axs[0].imshow(img1_array[current_index])
-        axs[0].set_title(f"TRAM con recorte del {title1}% {current_index + 1}/{num_images}")
+        if (title1 == "0") or (title1 == 0):
+            axs[0].set_title(f"TRAM con recorte nulo {current_index + 1}/{num_images}")   
+        else:
+            axs[0].set_title(f"TRAM con recorte {title1} {current_index + 1}/{num_images}")
+        
         axs[0].axis('off')
 
         axs[1].imshow(img2_arrays[current_index])
-        axs[1].set_title(f"TRAM con recorte del {title2}% {current_index + 1}/{num_images}")
+        axs[1].set_title(f"TRAM con recorte del {title2} {current_index + 1}/{num_images}")
         axs[1].axis('off')
         
         fig.canvas.draw()
