@@ -140,7 +140,7 @@ class TwoImageHistogramNavigator:
 
         # Crear una barra de colores vertical con la LUT seleccionada
         gradient = np.linspace(0, 1, 256).reshape(-1, 1)
-        self.ax_lut.imshow(gradient, aspect='auto', cmap=self.lut)
+        self.ax_lut.imshow(gradient, aspect='auto', cmap=self.lut, origin='lower')
         self.ax_lut.set_title('LUT')
         self.ax_lut.set_xticks([])
         self.ax_lut.set_yticks([])

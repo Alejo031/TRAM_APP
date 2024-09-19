@@ -180,6 +180,7 @@ if(resp1 == True):
         if(resp4 == True):
             tram = aux1
 
+show_sitk_image(tram)
 
 #Convertir la resta de resonancias en una imagen SimpleITK y recastearla como un entero de 32 bits
 subtraction_sitk = []

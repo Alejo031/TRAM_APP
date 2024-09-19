@@ -42,7 +42,7 @@ class ImageViewer:
         num_colors = cmap.N
         
         # Create an axes for the legend
-        ax_legend = self.fig.add_axes([0.85, 0.1, 0.05, 0.8], facecolor='black')
+        ax_legend = self.fig.add_axes([0.8, 0.1, 0.05, 0.8], facecolor='black')
         
         for i in range(num_colors):
             y = i / num_colors
