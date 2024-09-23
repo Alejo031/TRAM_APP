@@ -49,23 +49,26 @@ button9 = Button(root, text = "9", padx = 30, pady = 20, command = lambda: butto
 
 button_equal = Button(root, text = "=", padx = 40, pady = 20, command = equal_button)
 button_clear = Button(root, text = "Clear", padx = 40, pady = 20, command = clear_button)
-button_plus = Button(root, text = "+", padx = 30, pady = 20, command = lambda: button_add)
+button_plus = Button(root, text = "+", padx = 30, pady = 20, command = button_add)
 
 
 # Dibujo los botones en mi ventana
 button1.grid(row = 3, column = 0)
 button2.grid(row = 3, column = 1)
 button3.grid(row = 3, column = 2)
+
 button4.grid(row = 2, column = 0)
 button5.grid(row = 2, column = 1)
 button6.grid(row = 2, column = 2)
+
 button7.grid(row = 1, column = 0)
 button8.grid(row = 1, column = 1)
 button9.grid(row = 1, column = 2)
-button0.grid(row = 4, column = 0)
 
-button_clear.grid(row = 4, column = 1)
-button_equal.grid(row = 5, column = 1)
+button0.grid(row = 4, column = 0)
+button_clear.grid(row = 4, column = 1, columnspan = 2)
+
 button_plus.grid(row = 5, column = 0)
+button_equal.grid(row = 5, column = 1, columnspan = 2)
 
 root.mainloop()

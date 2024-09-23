@@ -2,7 +2,7 @@ __author__ = 'Alejo Chacon'
 
 from load_registration import load_registration_dicom
 from compare_registered_mri import compare_mri
-from apply_lut import apply_lut_2, apply_histogram, lut_and_clipping_manager
+from apply_lut import lut_and_clipping_manager
 from plot_histogram import plot_histograms_with_lut
 
 import tkinter as tk
@@ -17,7 +17,7 @@ import numpy as np
 from comparar_percentiles_lut import comparar_percentiles
 import time
 from respuesta_binaria import solicitar_respuesta_binaria
-from mri_registration_tool import heavy_registration, fast_registration
+from mri_registration_tool import precise_registration, fast_registration
 from lut_inverter import invert_image_list
 from update_manager import generar_requirements, instalar_faltantes_desde_requerimientos
 
@@ -116,7 +116,7 @@ else:
             resampled3D = fast_registration(t1_img, t2_img)
             aux = True
         elif respuesta3 in ["precisa"]:
-            resampled3D = heavy_registration(t1_img, t2_img)
+            resampled3D = precise_registration(t1_img, t2_img)
             aux = True
         else:
             print("Respuesta no válida, intente de nuevo")
