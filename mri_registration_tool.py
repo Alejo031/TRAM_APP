@@ -191,11 +191,12 @@ def registration_tool(t1_image, t1_metadata, t2_image, t2_metadata):
 
         if resp0 in ['externo', 'externa', 'ext']:
             # Cargo el archivo de registración
+            print("Seleccione el archivo de registración")
             dicom_registration = load_registration_dicom()
 
             # Defino cual es la imagen fija y cual la móvil
             print("Para aplicar la matriz de registro es necesario saber sobre cual de las resonancias se aplicó la transformación.")
-            resp1 = input("¿Cuál de las resonancias es la fija? (TEMPRANA/t1 o TARDÍA/t2)").strip().lower()
+            resp1 = input("¿Cuál de las resonancias es la fija? (TEMPRANA/t1 o TARDÍA/t2): ").strip().lower()
             if resp1 in ['temprana', 't1']:
                 # Aplico la matriz de registración
                 resampled3D = registerDicom(t1_image, t2_image, t2_metadata[0].get("0020|000e"), dicom_registration)

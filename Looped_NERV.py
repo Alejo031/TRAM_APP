@@ -1,32 +1,25 @@
 __author__ = 'Alejo Chacon'
 
-from load_registration import load_registration_dicom
 from compare_registered_mri import compare_mri
 from apply_lut import lut_and_clipping_manager
 from plot_histogram import plot_histograms_with_lut
-
 import tkinter as tk
 from tkinter import filedialog
-from back_to_slices import convert_3d_image_to_slices
 from subtract_mri import subtract_mri
 from visualize_sitk import show_sitk_image
 from Dicom_Reader_Writer import get_dicom, rgb_to_dicom, monochrome_to_PET_dicom
 import SimpleITK as sitk
-from RegisterImages.WithDicomReg import registerDicom
 import numpy as np 
 from comparar_percentiles_lut import comparar_percentiles
 import time
 from respuesta_binaria import solicitar_respuesta_binaria
 from mri_registration_tool import registration_tool
 
+# No borrar, son las funciones que se usan para descargar los paquetes necesarios para que el codigo funcione (Es la sección comentada al inicio del programa)
 from lut_inverter import invert_image_list
-from update_manager import generar_requirements, instalar_faltantes_desde_requerimientos
+from update_manager import instalar_faltantes_desde_requerimientos
 
-
-
-
-
-
+from back_to_slices import convert_3d_image_to_slices
 
 # Habilito el uso de ventanas
 root = tk.Tk()
@@ -45,8 +38,6 @@ time.sleep(3)
 # Descarga los paquetes de python necesarios para correr el programa. Utilizar cuando se hace un pull desde el repositorio a 
 # partir de un .txt que se encuentra en la carpeta del main
 #instalar_faltantes_desde_requerimientos()
-# Crea el archivo "requerimientos.txt" con la lista de paquetes necesarios para ejecutar el programa
-#generar_requirements()
 
 
 
@@ -63,6 +54,9 @@ t2_path = filedialog.askdirectory(title=f"Seleccione la carpeta que contiene la 
 t2_img, t2_metadata = get_dicom(t2_path)
 print(f"Se cargó la imagen temprana desde la carpeta: {t2_path}")
 
+asd1 = convert_3d_image_to_slices(t1_img)
+asd2 = convert_3d_image_to_slices(t2_img)
+compare_mri(asd1, asd2, "Resonancia t1 original", "Resonancia t2 original", "Imágenes crudas")
 
 exit = False
 while exit == False: 
@@ -93,6 +87,8 @@ while exit == False:
 
     # Se restan las resonancias
     subtraction = subtract_mri(t1_list, t2_list)
+    show_sitk_image(subtraction, "gray")
+
     # Se aplica la LUT
     print("A continuación se muestran el TRAM crudo y el histograma de la resta en escala de grises")
     print("Utilice la información del histograma para decidir si quiere recortarlo y mejorar la interpretacion de la imagen")

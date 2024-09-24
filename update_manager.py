@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 import pkg_resources
+import ast 
 
 def instalar_faltantes_desde_requerimientos():
     """
@@ -38,9 +39,3 @@ def instalar_faltantes_desde_requerimientos():
     except Exception as e:
         print(f"Error al procesar los requerimientos: {e}")
 
-
-# Generar el archivo requirements.txt al finalizar la ejecución
-def generar_requirements():
-    with open('requirements.txt', 'w') as f:
-        # Llama a pip freeze y guarda la salida en el archivo requirements.txt
-        subprocess.run(['pip', 'freeze'], stdout=f)

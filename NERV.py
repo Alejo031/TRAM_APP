@@ -19,9 +19,7 @@ import time
 from respuesta_binaria import solicitar_respuesta_binaria
 from mri_registration_tool import precise_registration, fast_registration
 from lut_inverter import invert_image_list
-from update_manager import generar_requirements, instalar_faltantes_desde_requerimientos
-
-
+from update_manager import instalar_faltantes_desde_requerimientos
 
 
 
@@ -44,8 +42,7 @@ time.sleep(3)
 # Descarga los paquetes de python necesarios para correr el programa. Utilizar cuando se hace un pull desde el repositorio a 
 # partir de un .txt que se encuentra en la carpeta del main
 #instalar_faltantes_desde_requerimientos()
-# Crea el archivo "requerimientos.txt" con la lista de paquetes necesarios para ejecutar el programa
-#generar_requirements()
+
 
 print("Esta herramienta permite aplicar registraciones externas o utilizar una herramienta de registración propia")
 time.sleep(2)
