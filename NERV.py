@@ -142,7 +142,7 @@ subtraction = subtract_mri(t1_list, t2_list)
 # Se aplica la LUT
 print("A continuación se muestran el TRAM crudo y el histograma de la resta en escala de grises")
 print("Utilice la información del histograma para decidir si quiere recortarlo y mejorar la interpretacion de la imagen")
-tram = lut_and_clipping_manager(subtraction, lut='jet_r')
+tram = lut_and_clipping_manager(subtraction, lut='jet')
 
 #Comprobar histograma
 plot_histograms_with_lut(subtraction, tram)
@@ -159,7 +159,7 @@ if(resp1 == True):
     control = False
     while(control!=True):
         p2 = input(f"Ingrese el recorte que desea aplicar(intensidad o percentil): ").strip().lower()        
-        aux2 = lut_and_clipping_manager(subtraction,p2, lut='jet_r')
+        aux2 = lut_and_clipping_manager(subtraction,p2, lut='jet')
         print("Se grafican el tram con el recorte anterior y el actual")
         comparar_percentiles(aux1, aux2, p1, p2, "Comparar recorte de percentiles RGB")
         resp2 = solicitar_respuesta_binaria("¿Desea probar otro valor?")

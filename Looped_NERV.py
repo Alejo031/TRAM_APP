@@ -87,12 +87,14 @@ while exit == False:
 
     # Se restan las resonancias
     subtraction = subtract_mri(t1_list, t2_list)
-    show_sitk_image(subtraction, "gray")
+    
+    # Ver resta en escala de grises
+    #show_sitk_image(subtraction, "gray")
 
     # Se aplica la LUT
     print("A continuación se muestran el TRAM crudo y el histograma de la resta en escala de grises")
     print("Utilice la información del histograma para decidir si quiere recortarlo y mejorar la interpretacion de la imagen")
-    tram = lut_and_clipping_manager(subtraction, lut='jet_r')
+    tram = lut_and_clipping_manager(subtraction, lut='jet')
 
     # Comprobar histograma
     plot_histograms_with_lut(subtraction, tram)
@@ -109,7 +111,7 @@ while exit == False:
         control = False
         while(control!=True):
             p2 = input(f"Ingrese el recorte que desea aplicar(intensidad o percentil): ").strip().lower()        
-            aux2 = lut_and_clipping_manager(subtraction,p2, lut='jet_r')
+            aux2 = lut_and_clipping_manager(subtraction,p2, lut='jet')
             print("Se grafican el tram con el recorte anterior y el actual")
             comparar_percentiles(aux1, aux2, p1, p2, "Comparar recorte de percentiles RGB")
             resp2 = solicitar_respuesta_binaria("¿Desea probar otro valor?")
@@ -128,7 +130,7 @@ while exit == False:
                 tram = aux1
 
     print("Se muestra la versión final del TRAM: ")
-    show_sitk_image(tram)
+    show_sitk_image(tram, lut='jet', window_title='Rojo=Necrosis ; Azul=Tumor Activo')
 
     resp5 = solicitar_respuesta_binaria("¿Está conforme con el TRAM obtenido? En caso de ingresar 'NO' el proceso volverá a la etapa de registración. ")
     if resp5 == True:
@@ -145,8 +147,8 @@ for s_img in subtraction:
 print("Se muestran el TRAM a color y la version PET-CT en escala de grises exportable a ARIA")
 print("El TRAM PET-CT no se recorta ya que la LUT puede ser ajustada dentro de ARIA")
 time.sleep(5)
-tram_pet = invert_image_list(subtraction_sitk)
-compare_mri(tram, tram_pet, "RGB", "PET inverted", "TRAM RGB y TRAM adaptado para PET-CT")
+tram_pet = subtraction_sitk
+compare_mri(tram, tram_pet, "RGB", "PET format", "TRAM RGB y TRAM adaptado para PET-CT")
 
 # Se pregunta si el usuario quiere guardar los TRAMs obtenidos
 resp6 = solicitar_respuesta_binaria("¿Desea guardar el resultado RGB?")

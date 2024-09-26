@@ -237,7 +237,7 @@ def apply_lut_2(image_list, intensity_max, lut):
 
 
 
-def lut_and_clipping_manager(image_list, intensity_max=None, lut='jet_r'):
+def lut_and_clipping_manager(image_list, intensity_max=None, lut='jet'):
     """
     Aplica una LUT a una lista de imágenes SimpleITK, ajustando el rango dinámico de la LUT
     según un valor de intensidad máxima o porcentaje.
@@ -249,7 +249,7 @@ def lut_and_clipping_manager(image_list, intensity_max=None, lut='jet_r'):
                                  Si es un valor porcentual (por ejemplo, '5%'), se recortan las colas
                                  del histograma en ese porcentaje para valores positivos y negativos.
                                  Si es un valor numérico, se usa como límite superior y -valor como límite inferior.
-    lut (str): Nombre de la LUT a aplicar. Default: 'jet_r'.
+    lut (str): Nombre de la LUT a aplicar. Default: 'jet'.
 
     Returns:
     list of sitk.Image: Lista de imágenes con la LUT aplicada.

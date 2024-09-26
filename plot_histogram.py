@@ -89,7 +89,7 @@ def plot_histograms(image_list):
 
 
 class TwoImageHistogramNavigator:
-    def __init__(self, gray_image_list, color_image_list, lut='jet_r'):
+    def __init__(self, gray_image_list, color_image_list, lut='jet'):
         self.gray_image_list = gray_image_list
         self.color_image_list = color_image_list
         self.lut = lut
@@ -167,7 +167,7 @@ class TwoImageHistogramNavigator:
         self.update_display()
 
 
-def plot_histograms_with_lut(gray_image_list, color_image_list, lut='jet_r'):
+def plot_histograms_with_lut(gray_image_list, color_image_list, lut='jet'):
     """
     Grafica imágenes a color con LUT y sus histogramas calculados a partir de imágenes en escala de grises.
     Permite navegar entre las imágenes con las flechas del teclado o mediante un cuadro de texto para ingresar el índice.
@@ -175,7 +175,7 @@ def plot_histograms_with_lut(gray_image_list, color_image_list, lut='jet_r'):
     Parameters:
     gray_image_list (list of sitk.Image): Lista de imágenes en escala de grises SimpleITK para calcular el histograma.
     color_image_list (list of sitk.Image): Lista de imágenes con LUT aplicada para visualización.
-    lut (str): Nombre de la LUT a aplicar. Default: 'jet_r'.
+    lut (str): Nombre de la LUT a aplicar. Default: 'jet'.
     """
     navigator = TwoImageHistogramNavigator(gray_image_list, color_image_list, lut)
     plt.show()
