@@ -209,7 +209,7 @@ def registration_tool(t1_image, t1_metadata, t2_image, t2_metadata):
 
             elif resp1 in ['tardía', 'tardia', 't2']:
                 # Aplico la matriz de registración
-                resampled3D = (t2_image, t1_image, t1_metadata[0].get("0020|000e"), dicom_registration)
+                resampled3D = registerDicom(t2_image, t1_image, t1_metadata[0].get("0020|000e"), dicom_registration)
                 # Divido los stacks de resonancias en cortes individuales
                 t1_list = convert_3d_image_to_slices(resampled3D)
                 t2_list = convert_3d_image_to_slices(t2_image)
